@@ -1,69 +1,53 @@
-import java.util.*;
+import random
 
-public class Hangman {
-    public static void main(String[] args) {
-        // Predefined list of 5 words
-        String[] words = {"apple", "tiger", "house", "robot", "music"};
+# List of 5 predefined words
+words = ["apple", "tiger", "house", "robot", "music"]
 
-        // Pick a random word
-        Random rand = new Random();
-        String chosenWord = words[rand.nextInt(words.length)];
+# Randomly pick a word
+chosen_word = random.choice(words)
 
-        // Convert word to char array
-        char[] wordArray = chosenWord.toCharArray();
-        char[] displayArray = new char[wordArray.length];
+# Create display list with underscores
+display = ["_"] * len(chosen_word)
 
-        // Fill display with underscores
-        Arrays.fill(displayArray, '_');
+incorrect_guesses = 0
+MAX_GUESSES = 6
+guessed_letters = []
 
-        int incorrectGuesses = 0;
-        final int MAX_GUESSES = 6;
+print("=== Hangman Game ===")
 
-        Scanner scanner = new Scanner(System.in);
-        List<Character> guessedLetters = new ArrayList<>();
+while incorrect_guesses < MAX_GUESSES:
+    print("\nWord:", " ".join(display))
+    print("Incorrect guesses:", incorrect_guesses, "/", MAX_GUESSES)
 
-        System.out.println("=== Hangman Game ===");
+    guess = input("Guess a letter: ").lower()
 
-        while (incorrectGuesses < MAX_GUESSES) {
-            System.out.println("\nWord: " + String.valueOf(displayArray));
-            System.out.println("Incorrect guesses: " + incorrectGuesses + "/" + MAX_GUESSES);
-            System.out.print("Guess a letter: ");
+    # Validate single letter input
+    if len(guess) != 1 or not guess.isalpha():
+        print("Please enter a single letter.")
+        continue
 
-            char guess = scanner.next().toLowerCase().charAt(0);
+    # Check if already guessed
+    if guess in guessed_letters:
+        print("You already guessed that letter!")
+        continue
 
-            // Check if already guessed
-            if (guessedLetters.contains(guess)) {
-                System.out.println("You already guessed that letter!");
-                continue;
-            }
+    guessed_letters.append(guess)
 
-            guessedLetters.add(guess);
+    # Check if letter exists in word
+    if guess in chosen_word:
+        print("Good guess!")
+        for i, char in enumerate(chosen_word):
+            if char == guess:
+                display[i] = guess
+    else:
+        print("Wrong guess!")
+        incorrect_guesses += 1
 
-            boolean found = false;
+    # Check win condition
+    if "_" not in display:
+        print("\n🎉 You won! The word was:", chosen_word)
+        break
 
-            // Reveal letters
-            for (int i = 0; i < wordArray.length; i++) {
-                if (wordArray[i] == guess) {
-                    displayArray[i] = guess;
-                    found = true;
-                }
-            }
-
-            if (!found) {
-                incorrectGuesses++;
-                System.out.println("Wrong guess!");
-            } else {
-                System.out.println("Good guess!");
-            }
-
-            // Check if the player won
-            if (String.valueOf(displayArray).equals(chosenWord)) {
-                System.out.println("\n🎉 You won! The word was: " + chosenWord);
-                return;
-            }
-        }
-
-        // Player loses
-        System.out.println("\n❌ You lost! The word was: " + chosenWord);
-    }
-}
+# Lose condition
+if incorrect_guesses == MAX_GUESSES:
+    print("\n❌ You lost! The word was:", chosen_word)
